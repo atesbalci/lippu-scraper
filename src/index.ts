@@ -1,4 +1,4 @@
-import puppeteer, { Browser, type Page } from 'puppeteer-core'
+import puppeteer, { Browser, type Page } from 'puppeteer'
 import dotenv from 'dotenv'
 import { Telegraf } from 'telegraf'
 
@@ -32,18 +32,18 @@ function isNewItem(item: Item) {
 
 async function shutdown(signal: string, browser: Browser) {
     console.log(`Received ${signal}, shutting down...`)
-    await browser.disconnect()
+    await browser.close()
     console.log('Browser disconnected on exit')
     process.exit(0)
 }
 
 async function main() {
     sendMessage('Bot started')
-    const browser = await puppeteer.connect({
-        protocol: 'webDriverBiDi',
-        browserWSEndpoint: 'ws://127.0.0.1:9222/session',
-        defaultViewport: null,
-    })
+    const browser = await puppeteer.launch({
+        browser: 'firefox',
+        headless: true,
+        userDataDir: `${process.env.HOME}/firefox-scraper-profile`,
+    });
     process.on('SIGINT', () => { shutdown('SIGINT', browser).catch(console.error); });
     process.on('SIGTERM', () => { shutdown('SIGTERM', browser).catch(console.error); });
     const pages = await browser.pages()
@@ -73,8 +73,8 @@ async function main() {
         }
     }
 
-    await browser.disconnect()
+    await browser.close()
     console.log('Browser disconnected on exit')
 }
 
-main()
+main().catch(console.error)

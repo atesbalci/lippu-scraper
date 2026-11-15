@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "dotenv": "^18.0.10",
-    "puppeteer-core": "^25.17.0",
+    "puppeteer": "^25.17.0",
     "telegraf": "^4.16.3"
   }
 }
